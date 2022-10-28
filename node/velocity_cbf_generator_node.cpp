@@ -205,7 +205,17 @@ int velocity_cbf(geometry_msgs::TwistStamped desired_vel_raw,geometry_msgs::Twis
             lowerBound.resize(cbf_num-1);
             linearMatrix.resize(cbf_num-1,2);
             int j = 0;
-            for(int i = 0; i < 5; i++)
+                if( cbO[0].getExist() == true)
+		{
+                    linearMatrix.insert(j,0) = 2*(cbO[0].getPose().pose.position.x - host_mocap.pose.position.x );
+                    linearMatrix.insert(j,1) = 2*(cbO[0].getPose().pose.position.y - host_mocap.pose.position.y );
+            	    upperBound(j) = 0.5*(pow((cbO[0].getPose().pose.position.x - host_mocap.pose.position.x ),2)+
+           			 pow((cbO[0].getPose().pose.position.y - host_mocap.pose.position.y ),2)-
+            			 pow( 0.3 ,2));
+		    lowerBound(j) = -OsqpEigen::INFTY;
+		    j++;
+		}	
+            for(int i = 1; i < 5; i++)
             {
                 if(i != CBF_object::self_id && cbO[i].getExist() == true)
                 {
